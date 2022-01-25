@@ -26,13 +26,13 @@ def autocamera_rub(run):
     print("RunAutoCameraIntent: " + str(run))
     print(run)
 
-    if(run == True):
+    if(run == "start"):
         pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1)
         while pub.get_num_connections() < 1:
             print("waiting for pub")
         pub.publish(True)
 
-    elif(run == False):
+    elif(run == "stop"):
         pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1)
         while pub.get_num_connections() < 1:
             print("waiting for pub")
@@ -45,19 +45,19 @@ def autocamera_rub(run):
 def autocamera_rub(tool):
     print("RunAutoCameraIntent" + str(tool))
 
-    if(tool == "Right"):
+    if(tool == "right"):
         pub = rospy.Publisher('/assistant/autocamera/track', Bool, queue_size=1)
         while pub.get_num_connections() < 1:
             print("waiting for pub")
         pub.publish("Right")
 
-    elif(tool == "Left"):
+    elif(tool == "left"):
         pub = rospy.Publisher('/assistant/autocamera/track', String, queue_size=1)
         while pub.get_num_connections() < 1:
             print("waiting for pub")
         pub.publish("Left")
 
-    elif(tool == "Middle"):
+    elif(tool == "middle"):
         pub = rospy.Publisher('/assistant/autocamera/track', String, queue_size=1)
         while pub.get_num_connections() < 1:
             print("waiting for pub")

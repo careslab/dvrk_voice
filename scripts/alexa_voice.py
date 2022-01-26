@@ -10,7 +10,7 @@ from std_msgs.msg import String
 app = Flask(__name__)
 ask = Ask(app, "/")
 
-#logging.getLogger("flask_ask").setLevel(logging.DEBUG)
+logging.getLogger("flask_ask").setLevel(logging.DEBUG)
 
 
 @ask.launch
@@ -27,10 +27,7 @@ def autocamera_rub(run):
     print(run)
 
     if(run == "start"):
-        pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1)
-        while pub.get_num_connections() < 1:
-            print("waiting for pub")
-        pub.publish(True)
+        pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1).publish(True)
 
     elif(run == "stop"):
         pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1)
@@ -44,7 +41,7 @@ def autocamera_rub(run):
 @ask.intent("TrackToolIntent", convert={'tool': String})
 def autocamera_rub(tool):
     print("RunAutoCameraIntent" + str(tool))
-
+    
     if(tool == "right"):
         pub = rospy.Publisher('/assistant/autocamera/track', Bool, queue_size=1)
         while pub.get_num_connections() < 1:
@@ -68,5 +65,5 @@ def autocamera_rub(tool):
 
 
 if __name__ == '__main__':
-
+    rospy.init_node('dvrk_voice', anonymous=True)
     app.run(debug=True)

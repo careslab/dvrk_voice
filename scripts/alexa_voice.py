@@ -3,6 +3,7 @@ from typing import Mapping
 # from urllib import request
 from flask import Flask, render_template, request, jsonify
 from flask_ask import Ask, statement, question, session
+import threading
 
 import rospy
 from std_msgs.msg import Empty
@@ -17,7 +18,23 @@ import json
 app = Flask(__name__)
 ask = Ask(app, "/")
 
-logging.getLogger("flask_ask").setLevel(logging.DEBUG)
+#logging.getLogger("flask_ask").setLevel(logging.DEBUG)
+
+# ROS node, publisher, and parameter.
+# The node is started in a separate thread to avoid conflicts with Flask.
+# The parameter *disable_signals* must be set if node is not initialized
+# in the main thread.
+
+threading.Thread(target=lambda: rospy.init_node('dvrk_voice', disable_signals=True, anonymous=True)).start()
+
+run_pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1, latch=True)
+track_pub = rospy.Publisher('/assistant/autocamera/track', String, queue_size=1, latch=True)
+findtools_pub = rospy.Publisher('/assistant/autocamera/find_tools', Empty, queue_size=1, latch=True)
+innerZoom_pub = rospy.Publisher('/assistant/autocamera/inner_zoom_value', Float32, queue_size=1, latch=True)
+outerZoom_pub = rospy.Publisher('/assistant/autocamera/outer_zoom_value', Float32, queue_size=1, latch=True)
+saveEcm_pub = rospy.Publisher('/assistant/save_ecm_position', Int16, queue_size=1)
+gotoEcm_pub = rospy.Publisher('/assistant/goto_ecm_position', Int16, queue_size=1)
+ecm_saved_positions=[]
 
 
 @ask.launch
@@ -59,13 +76,13 @@ def autocamera_track(tool):
 
     #publish to track topic 
     if(tool == "right"):
-        track_pub.publish("Right")
+        track_pub.publish("right")
 
     elif(tool == "left"):
-        track_pub.publish("Left")
+        track_pub.publish("left")
 
     elif(tool == "middle"):
-        track_pub.publish("Middle")
+        track_pub.publish("middle")
 
     say = 'Done'
     return statement(say)
@@ -82,13 +99,13 @@ def autocamera_keep(tool):
 
     #publish to track topic 
     if(tool == "right"):
-        track_pub.publish("Right")
+        track_pub.publish("right")
 
     elif(tool == "left"):
-        track_pub.publish("Left")
+        track_pub.publish("left")
 
     elif(tool == "middle"):
-        track_pub.publish("Middle")
+        track_pub.publish("middle")
 
     say = 'Done'
     return statement(say)
@@ -108,10 +125,11 @@ def autocamera_findtools():
 def autocamera_innerOuterZoom(zone, value):
     
     print("InnerOuterZoomLevelIntent: " + str(zone) + ":" + str(value))
+    print(isinstance(value, float))
 
     #Check for value data types and size
-    if(value >= 2 or type(value) != int or type(value) != float):
-        say = 'Please pick a number between zero and two'
+    if(not isinstance(value, float)):
+        say = 'Could not register number'
         return statement(say)
 
     #publish to inner outer zoom topic 
@@ -133,12 +151,12 @@ def davinci_saveEcm(name):
     
     print("SaveEcmPositionAsIntent: " + str(name))
 
-    #Check for value data types and size
-    if(type(name) != int or type(name) != float):
-        say = 'Please pick a number to save the endoscope position'
+    if(not isinstance(name, int)):
+        say = 'Could not register number'
         return statement(say)
 
     ecm_saved_positions.append(name)
+    print(ecm_saved_positions)
 
     #publish to save topic 
     saveEcm_pub.publish(name)
@@ -152,8 +170,8 @@ def davinci_gotoEcm(name):
     print("GotoEcmPositionAsIntent: " + str(name))
 
     #Check for value data types and size
-    if(type(name) != int or type(name) != float):
-        say = 'Please pick a number to move the endoscope position'
+    if(not isinstance(name, int)):
+        say = 'Could not register number'
         return statement(say)
 
     #Check if the value has already been saved
@@ -169,15 +187,4 @@ def davinci_gotoEcm(name):
 
 
 if __name__ == '__main__':
-    rospy.init_node('dvrk_voice', anonymous=True)
-    run_pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1, latch=True)
-    track_pub = rospy.Publisher('/assistant/autocamera/track', String, queue_size=1, latch=True)
-    findtools_pub = rospy.Publisher('/assistant/autocamera/find_tools', Empty, queue_size=1, latch=True)
-    innerZoom_pub = rospy.Publisher('/assistant/autocamera/inner_zoom_value', Float32, queue_size=1, latch=True)
-    outerZoom_pub = rospy.Publisher('/assistant/autocamera/outer_zoom_value', Float32, queue_size=1, latch=True)
-    saveEcm_pub = rospy.Publisher('/assistant/save_ecm_position', Int16, queue_size=1, latch=True)
-    gotoEcm_pub = rospy.Publisher('/assistant/goto_ecm_position', Int16, queue_size=1, latch=True)
-
-    ecm_saved_positions=[]
-
     app.run(debug=True)

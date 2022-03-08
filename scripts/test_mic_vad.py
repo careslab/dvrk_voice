@@ -6,6 +6,7 @@ import vosk
 import json
 import sys
 import threading
+from playsound import playsound
 
 
 import rospy
@@ -106,45 +107,53 @@ try:
                     if(cmd == "davinci start auto camera"):
                         print("Running autocamera")
                         run_pub.publish(True)
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci stop auto camera"):
                         print("Stopping autocamera")
                         run_pub.publish(False)
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     #publish to track topic 
                     elif(cmd == "davinci track right"):
                         print("Tracking right")
                         track_pub.publish("right")
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci track left"):
                         print("Tracking left")
                         track_pub.publish("left")
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci track middle"or \
                          cmd == "davinci track off"):
                         print("Tracking middle")
                         track_pub.publish("middle")
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     #publish to keep topic 
                     elif(cmd == "davinci keep right"):
                         print("Keeping right")
                         track_pub.publish("right")
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci keep left"):
                         print("Keeping left")
                         track_pub.publish("left")
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci keep middle" or \
                          cmd == "davinci keep off"):
                         print("Keeping middle")
                         track_pub.publish("middle")
+                        playsound('sound95.wav')
                         rec.Reset()
 
                     #publish to find tools topic
@@ -152,6 +161,7 @@ try:
                          cmd == "davinci find my tools"):
                         print("Finding tools")
                         findtools_pub.publish()
+                        playsound('sound95.wav')
                         rec.Reset()
                         
                     else:

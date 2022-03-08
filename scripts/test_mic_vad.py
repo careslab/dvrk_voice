@@ -97,7 +97,7 @@ try:
                     #publish to run topic 
                     res = json.loads(rec.Result())
                     cmd = res['text']
-                    print (cmd)
+                    #print (cmd)
 
                 else:
                     res = json.loads(rec.PartialResult())
@@ -106,41 +106,54 @@ try:
                     if(cmd == "davinci start auto camera"):
                         print("Running autocamera")
                         run_pub.publish(True)
+                        rec.Reset()
 
                     elif(cmd == "davinci stop auto camera"):
                         print("Stopping autocamera")
                         run_pub.publish(False)
+                        rec.Reset()
 
                     #publish to track topic 
                     elif(cmd == "davinci track right"):
                         print("Tracking right")
                         track_pub.publish("right")
+                        rec.Reset()
 
                     elif(cmd == "davinci track left"):
                         print("Tracking left")
                         track_pub.publish("left")
+                        rec.Reset()
 
-                    elif(cmd == "davinci track middle"):
+                    elif(cmd == "davinci track middle"or \
+                         cmd == "davinci track off"):
                         print("Tracking middle")
                         track_pub.publish("middle")
+                        rec.Reset()
 
                     #publish to keep topic 
                     elif(cmd == "davinci keep right"):
                         print("Keeping right")
                         track_pub.publish("right")
+                        rec.Reset()
 
                     elif(cmd == "davinci keep left"):
                         print("Keeping left")
                         track_pub.publish("left")
+                        rec.Reset()
 
-                    elif(cmd == "davinci keep middle"):
+                    elif(cmd == "davinci keep middle" or \
+                         cmd == "davinci keep off"):
                         print("Keeping middle")
                         track_pub.publish("middle")
+                        rec.Reset()
 
                     #publish to find tools topic
-                    elif(cmd == "davinci find tools"):
+                    elif(cmd == "davinci find tools" or \
+                         cmd == "davinci find my tools"):
                         print("Finding tools")
                         findtools_pub.publish()
+                        rec.Reset()
+                        
                     else:
                         pass
 

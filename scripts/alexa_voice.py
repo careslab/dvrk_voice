@@ -29,6 +29,7 @@ threading.Thread(target=lambda: rospy.init_node('dvrk_voice', disable_signals=Tr
 
 run_pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1, latch=True)
 track_pub = rospy.Publisher('/assistant/autocamera/track', String, queue_size=1, latch=True)
+keep_pub = rospy.Publisher('/assistant/autocamera/keep', String, queue_size=1, latch=True)
 findtools_pub = rospy.Publisher('/assistant/autocamera/find_tools', Empty, queue_size=1, latch=True)
 innerZoom_pub = rospy.Publisher('/assistant/autocamera/inner_zoom_value', Float32, queue_size=1, latch=True)
 outerZoom_pub = rospy.Publisher('/assistant/autocamera/outer_zoom_value', Float32, queue_size=1, latch=True)
@@ -71,7 +72,6 @@ def autocamera_track(tool):
     data = request.get_json()
     #print(data, '\n')      #Optionally print the json
     tool = str(data['request']['intent']['slots']['tool']['resolutions']['resolutionsPerAuthority'][0]['values'][0]['value']['name']).lower()  # I'm NEVER doing this again!
-    # [0]['values'][0]['value']['name']
     print("TrackToolIntent: " + str(tool))
 
     #publish to track topic 
@@ -94,18 +94,17 @@ def autocamera_keep(tool):
     data = request.get_json()
     #print(data, '\n')      #Optionally print the json
     tool = str(data['request']['intent']['slots']['tool']['resolutions']['resolutionsPerAuthority'][0]['values'][0]['value']['name']).lower()  # I'm NEVER doing this again!
-    # [0]['values'][0]['value']['name']
     print("KeepToolPositionIntent: " + str(tool))
 
     #publish to track topic 
     if(tool == "right"):
-        track_pub.publish("right")
+        keep_pub.publish("right")
 
     elif(tool == "left"):
-        track_pub.publish("left")
+        keep_pub.publish("left")
 
     elif(tool == "middle"):
-        track_pub.publish("middle")
+        keep_pub.publish("middle")
 
     say = 'Done'
     return statement(say)

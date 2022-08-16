@@ -20,6 +20,7 @@ threading.Thread(target=lambda: rospy.init_node('dvrk_voice', disable_signals=Tr
 
 run_pub = rospy.Publisher('/assistant/autocamera/run', Bool, queue_size=1, latch=True)
 track_pub = rospy.Publisher('/assistant/autocamera/track', String, queue_size=1, latch=True)
+keep_pub = rospy.Publisher('/assistant/autocamera/keep', String, queue_size=1, latch=True)
 findtools_pub = rospy.Publisher('/assistant/autocamera/find_tools', Empty, queue_size=1, latch=True)
 innerZoom_pub = rospy.Publisher('/assistant/autocamera/inner_zoom_value', Float32, queue_size=1, latch=True)
 outerZoom_pub = rospy.Publisher('/assistant/autocamera/outer_zoom_value', Float32, queue_size=1, latch=True)
@@ -139,20 +140,20 @@ try:
                     #publish to keep topic 
                     elif(cmd == "davinci keep right"):
                         print("Keeping right")
-                        track_pub.publish("right")
+                        keep_pub.publish("right")
                         playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci keep left"):
                         print("Keeping left")
-                        track_pub.publish("left")
+                        keep_pub.publish("left")
                         playsound('sound95.wav')
                         rec.Reset()
 
                     elif(cmd == "davinci keep middle" or \
                          cmd == "davinci keep off"):
                         print("Keeping middle")
-                        track_pub.publish("middle")
+                        keep_pub.publish("middle")
                         playsound('sound95.wav')
                         rec.Reset()
 

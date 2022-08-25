@@ -10,6 +10,8 @@
 4. Conda also required
 
 ### Usage
+---
+- Can run /scripts/run_voice.sh to execute the commands below.
 1. Start daVinci
 2. Open a Terminal and and paste `roslaunch autocamera test_hardware.launch`
    - Power On
